@@ -1,0 +1,9 @@
+{
+  "id": "paseo-inbox",
+  "name": "Inbox",
+  "description": "Replaces the sidebar with an email-style inbox of agents: archive when done, snooze, pin",
+  "media": [],
+  "requirements": {
+    "paseo": ">=0.16.2"
+  }
+}
