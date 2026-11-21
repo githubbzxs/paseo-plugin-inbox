@@ -153,8 +153,8 @@ export function InboxSidebar(props: PluginSidebarViewProps) {
   }, [groups]);
 
   const colors = useMemo(() => overlays(theme), [theme]);
-  // Like t3code: Running, Snoozed and Archived are drawers, collapsed by default and pinned to the bottom of the sidebar.
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({ working: true, snoozed: true, settled: true });
+  // Running, Snoozed and Archived are drawers pinned to the bottom of the sidebar; Running starts expanded, the other two collapsed.
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({ working: false, snoozed: true, settled: true });
   const firstShelf = SHELVES.find((sec) => (bySection.get(sec)?.length ?? 0) > 0);
   // For "Archive all", rows slide out one after another, then everything is committed at once.
   const [sweeping, setSweeping] = useState<ReadonlySet<string>>(new Set());
