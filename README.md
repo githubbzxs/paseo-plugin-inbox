@@ -2,6 +2,8 @@
 
 A [Paseo](https://paseo.sh) plugin that replaces the sidebar with an email-style inbox of agents: what needs you stays in the inbox, archive it when you are done, snooze or pin the rest. See [OVERVIEW.md](OVERVIEW.md) for how it behaves.
 
+![Inbox sidebar](docs/screenshot.png)
+
 ## Install
 
 ```bash
