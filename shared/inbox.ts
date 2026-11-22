@@ -60,6 +60,7 @@ export function sectionOf(
 
 /** Sort key within a section; larger sorts higher. */
 export function sortKey(ws: PluginWorkspaceSnapshot, e: InboxEntry | undefined, section: Section): number {
+  // Snoozed: by wake time, earliest first.
   if (section === "snoozed") return -(e?.snoozedUntil ?? 0);
   // Like t3code: Running is ordered by the last message you sent.
   if (section === "working") return Math.max(ms(ws.lastPromptAt), ms(ws.createdAt));
@@ -222,13 +223,19 @@ export function relativeTime(t: number, now: number): string {
   return `${Math.floor(d / 86400_000)}d`;
 }
 
-/** Time until a snooze wakes: 45m, 3h, 2d. */
+/** When a snooze wakes: Today 21:30, Tomorrow 09:00, Mon 09:00 (within a week), 11-30 09:00. */
 export function snoozeWakeLabel(until: number, now: number): string {
-  if (until <= now) return "now";
-  const minutes = Math.max(1, Math.floor(until / 60_000) - Math.floor(now / 60_000));
-  if (minutes < 60) return `${minutes}m`;
-  if (minutes < 24 * 60) return `${Math.ceil(minutes / 60)}h`;
-  return `${Math.ceil(minutes / (24 * 60))}d`;
+  const d = new Date(until);
+  const hm = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  const day0 = (t: number) => {
+    const x = new Date(t);
+    return new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  };
+  const days = Math.round((day0(until) - day0(now)) / 86400_000);
+  if (days <= 0) return `Today ${hm}`;
+  if (days === 1) return `Tomorrow ${hm}`;
+  if (days < 7) return `${"Sun Mon Tue Wed Thu Fri Sat".split(" ")[d.getDay()]} ${hm}`;
+  return `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ${hm}`;
 }
 
 /** How long it has been running. */
@@ -250,13 +257,15 @@ export interface RowStatus {
   spin?: boolean;
 }
 
-/** One status per row, in t3code's priority: needs you → running → failed → woke → done; otherwise the time. */
+/** One status per row (snoozed rows show only their wake time), in t3code's priority: needs you → running → failed → woke → done; otherwise the time. */
 export function rowStatus(
   ws: PluginWorkspaceSnapshot,
   e: InboxEntry | undefined,
   section: Section,
   now: number,
 ): RowStatus | null {
+  // Snoozed rows show only when they wake, never Done / Needs you.
+  if (section === "snoozed") return null;
   if (ws.status === "needs_input") return { text: "Needs you", tone: "approval", icon: "MessageCircleQuestion" };
   if (section === "working" || ws.status === "running") {
     const since = ms(ws.statusEnteredAt);

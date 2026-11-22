@@ -81,8 +81,14 @@ function ws(over: Partial<PluginWorkspaceSnapshot> = {}): PluginWorkspaceSnapsho
   assert.equal(findSnoozePreset("2d", morning)!.until, morning + 2 * 86400_000);
   assert.equal(findSnoozePreset("1h", morning)!.id, "after-60");
   assert.equal(customSnoozeUntil(1.5, "hour", morning), morning + 5400_000);
-  assert.equal(snoozeWakeLabel(morning + 45 * 60_000, morning), "45m");
-  assert.equal(snoozeWakeLabel(morning + 3 * 3600_000, morning), "3h");
+  assert.equal(snoozeWakeLabel(morning + 45 * 60_000, morning), "Today 10:45");
+  assert.equal(snoozeWakeLabel(findSnoozePreset("tomorrow", morning)!.until, morning), "Tomorrow 09:00");
+  assert.equal(snoozeWakeLabel(monday.until, morning), "Mon 09:00");
+  assert.equal(snoozeWakeLabel(morning + 10 * 86400_000, morning), "12-01 10:00");
+  // Snoozed rows show only the wake time, even when unread; earliest wake sorts first
+  const sz = applyOp({ unreadAt: morning }, "snooze", morning, morning + 3600_000);
+  assert.equal(rowStatus(ws(), sz, "snoozed", morning), null);
+  assert.ok(sortKey(ws(), sz, "snoozed") > sortKey(ws(), applyOp({}, "snooze", morning, morning + 7200_000), "snoozed"));
 }
 
 // 8. Status: needs you comes first; finished and unread shows Done; read shows none

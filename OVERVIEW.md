@@ -16,7 +16,7 @@ As in t3code, there is no separate "mark as read": the ✓ (done) action archive
 
 ## Rows
 
-The first line shows the project name (with a pin icon when pinned; click it to unpin) and a status on the right: Needs you (amber), Running with elapsed time (blue, spinning), Failed (red), Woke, or Done (green: finished and not yet handled). Without a status it shows how long ago; snoozed rows show time until they wake. The second line is the title. Running and handled rows are dimmed so rows that need you stand out.
+The first line shows the project name (with a pin icon when pinned; click it to unpin) and a status on the right: Needs you (amber), Running with elapsed time (blue, spinning), Failed (red), Woke, or Done (green: finished and not yet handled). Without a status it shows how long ago; snoozed rows show only when they wake (Today 21:30, Tomorrow 09:00, Mon 09:00), ordered earliest first. The second line is the title. Running and handled rows are dimmed so rows that need you stand out.
 
 ## Actions
 
